@@ -1,10 +1,23 @@
 library(shiny)
 library(shinyURL)
+library(shinyjs)
 
 #options(shiny.trace = TRUE)
 
 shinyServer(function(input, output) {
   shinyURL.server()
+  useShinyjs()  # Include shinyjs
+
+   observe({
+     if (input$visitor.success.type == "service.type") {
+       shinyjs::hide(id = "advanced")
+     }else if(input$visitor.success.type == "all"){
+       shinyjs::hide(id = "advanced")
+     }else(
+       shinyjs::show(id = "advanced")
+       )
+   })
+
   #### VISITOR SUCCESS ####
   # DATA MUNGING
   # subset by timeseries start and end
@@ -104,6 +117,7 @@ shinyServer(function(input, output) {
 
   })
 
+
   # REACTIVE UI
   #   filter by type
   output$type.selection.options <- renderUI({
@@ -119,6 +133,7 @@ shinyServer(function(input, output) {
         return(NULL)
       }
     }
+
     selectInput(inputId = "visitor.success.type.selector",
                 label = "Filter By Type",
                 choices = c("all", unique.subtypes))
@@ -228,13 +243,13 @@ shinyServer(function(input, output) {
         printGGplotly(.)
     } else if (input$visitor.success.top.bottom == "top") {
       slice.to = as.numeric(input$visitor.success.select.k)
-      
+
       top.groups = visitor.success.timeseries.data() %>%
         dplyr::group_by(group_factor) %>%
         dplyr::summarise(n = sum(n)) %>%
         dplyr::arrange(dplyr::desc(n)) %>%  # arrange high to low
         dplyr::slice(1:slice.to)
-      
+
       visitor.success.timeseries.data() %>%
         dplyr::filter(group_factor %in% top.groups$group_factor) %>%
         {
@@ -257,14 +272,14 @@ shinyServer(function(input, output) {
         printGGplotly(.)
     } else {
       slice.to = as.numeric(input$visitor.success.select.k)
-      
+
       top.groups = visitor.success.timeseries.data() %>%
         dplyr::group_by(group_factor) %>%
         dplyr::summarise(n = sum(n)) %>%
         dplyr::arrange(n) %>%  # arrange low to high
         dplyr::ungroup() %>%
         dplyr::slice(1:slice.to)
-      
+
       visitor.success.timeseries.data() %>%
         dplyr::filter(group_factor %in% top.groups$group_factor) %>%
         {
@@ -285,10 +300,10 @@ shinyServer(function(input, output) {
           }
         } %>%
         printGGplotly(.)
-      
+
     }
   })
-  
+
   #### SUCCESS RATE ####
   output$topic.conversions <- renderPlotly({
     grouped.sessions.conversions %>%

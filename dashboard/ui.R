@@ -1,6 +1,7 @@
 library(shiny)
 library(shinydashboard)
 library(shinyURL)
+library(shinyjs)
 
 shinyUI(navbarPage(
   theme = "custom.css",
@@ -10,6 +11,7 @@ shinyUI(navbarPage(
   tabPanel(
     "Visitor Success",
     fluidPage(
+      useShinyjs(),  # Include shinyjs
       fluidRow(
         sidebarLayout(
           sidebarPanel(
@@ -28,14 +30,16 @@ shinyUI(navbarPage(
                           "Service Type" = "service.type",
                           "Event Type" = "event.type"),
               selected = "all",
-              inline = T
+              inline = T),
+              shinyjs::hidden(div(
+                id = "advanced",
+                uiOutput("type.selection.options"),
+                br(),
+                br())
             ),
-            uiOutput("type.selection.options"),
-          br(),
-          br(),
             checkboxGroupInput(
               inputId = "visitor.success.group.by",
-            label = "Group By", 
+            label = "Group By",
               choices = c("Site Section Landing" = "site_section",
                           "Topic" = "topic",
                           "Sub-Topic" = "subtopic",
@@ -63,11 +67,11 @@ shinyUI(navbarPage(
               )
             ),
           radioButtons(
-            inputId = "visitor.success.units", 
-            label = "Display Unit", 
-            choices = c("Percent" = "percent", 
+            inputId = "visitor.success.units",
+            label = "Display Unit",
+            choices = c("Percent" = "percent",
                         "Number" = "number"),
-            selected = "percent", 
+            selected = "percent",
             inline = T
           ),
             # URL generator
@@ -84,7 +88,7 @@ shinyUI(navbarPage(
       )
     )
   ),
-  
+
   #### SUCCESS RATE ####
   tabPanel(title = "Success Rate",
            radioButtons(
@@ -104,4 +108,3 @@ shinyUI(navbarPage(
            br(),
            plotlyOutput("topic.conversion.rate"))
 ))
-
