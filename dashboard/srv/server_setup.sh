@@ -54,6 +54,7 @@ declare -a packages=('shiny'
                      'BreakoutDetection'
                      'devtools'
                      'readr'
+                     'shinyjs'
                      )
 
 for package_name in ${packages[@]}; do
