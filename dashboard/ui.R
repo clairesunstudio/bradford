@@ -22,20 +22,22 @@ shinyUI(navbarPage(
               end = yesterday,  # sourced from global.R
               startview = "month"
             ),
-            radioButtons(
-              inputId = "visitor.success.type",
-            label =  "Filter C1s",
-              choices = c("All" = "all",
-                          "Page Type" = "page.type",
-                          "Service Type" = "service.type",
-                          "Event Type" = "event.type"),
-              selected = "all",
-              inline = T),
+            splitLayout(
+            cellWidths = c("50%", "50%"),
+              div(selectInput(
+                inputId = "visitor.success.type",
+                label =  "Filter C1s",
+                choices = c("All" = "all",
+                            "Page Type" = "page.type",
+                            "Service Type" = "service.type",
+                            "Event Type" = "event.type"),
+                selected = "all"
+              ),
+              br(),
+              br()),
               shinyjs::hidden(div(
                 id = "advanced",
-                uiOutput("type.selection.options"),
-                br(),
-                br())
+                uiOutput("type.selection.options")))
             ),
             checkboxGroupInput(
               inputId = "visitor.success.group.by",
